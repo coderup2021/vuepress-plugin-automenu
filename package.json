@@ -1,8 +1,16 @@
 {
-  "name": "node-ts-starter",
+  "name": "vuepress-plugin-automenu",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "homepage": "https://github.com/itgou/vuepress-plugin-automenu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itgou/vuepress-plugin-automenu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itgou/vuepress-plugin-automenu/issues"
+  },
   "scripts": {
     "build": "rimraf ./build && tsc",
     "lint": "eslint . --ext .ts",
@@ -14,11 +22,13 @@
     "prepare": "husky install"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "itgou",
+  "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
+    "@types/colors": "^1.2.1",
+    "@types/fs-extra": "^9.0.13",
     "@types/node": "^14.14.35",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
@@ -32,9 +42,16 @@
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "vuepress-types": "^0.9.4"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "execa": "^6.0.0",
+    "fs-extra": "^10.0.0",
+    "merge": "^2.1.1"
   }
 }

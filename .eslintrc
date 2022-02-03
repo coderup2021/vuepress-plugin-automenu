@@ -17,6 +17,7 @@
       { "endOfLine": "auto" },
       { "usePrettierrc": true }
     ],
-    "sort-keys": "warn"
+    "sort-keys": "warn",
+    "@typescript-eslint/no-var-requires": 0
   }
 }
