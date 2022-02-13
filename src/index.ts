@@ -1,6 +1,7 @@
 import { Context } from 'vuepress-types'
 import { red } from 'colors'
 import { existsSync, writeFileSync } from 'fs'
+import * as path from 'path'
 import { join } from 'path'
 import { AutoSidebarPluginOptions } from './types'
 import { genTopMenu, genSideBar } from './utils/data'
@@ -39,10 +40,10 @@ const AutoMenuPlugin = (options: AutoSidebarPluginOptions, ctx: Context) => {
           const sideBar = join(ctx.sourceDir, `.vuepress/${SIDEBAR_FILE_NAME}.js`)
           //prettier-ignore
           const menu = join(ctx.sourceDir, `.vuepress/${MENU_FILE_NAME}.js`)
-
+          const dataDir = path.resolve(ctx.sourceDir, dir)
           if (options.force || (!existsSync(sideBar) && !existsSync(menu))) {
-            const topMenuData = genTopMenu(ctx.sourceDir, options)
-            const sideBarData = genSideBar(ctx.sourceDir, options)
+            const topMenuData = genTopMenu(dataDir, options)
+            const sideBarData = genSideBar(dataDir, options)
             writeFileSync(
               sideBar,
               `module.exports = ${JSON.stringify(sideBarData, null, 2)};`
