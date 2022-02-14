@@ -139,3 +139,8 @@ export interface SideMenuData {
 export interface SideMenuObj {
   [prop: string]: SideMenu[]
 }
+
+export interface AutomenuOptions {
+  excludeDirNames?: string[]
+  force?: boolean
+}

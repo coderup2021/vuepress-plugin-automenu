@@ -2,7 +2,7 @@ import { NavbarResult, SideMenu, SideMenuData } from '../types'
 import { padWithSlash } from './path'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { TopMenu } from '../types/index'
+import { TopMenu, AutomenuOptions } from '../types/index'
 
 // 对 nav 进行简单排序
 const handleNavSort = (nav: NavbarResult) =>
@@ -20,9 +20,10 @@ const isDir = (menuPath: string): boolean => {
 
 const filterNames = ['.vuepress', 'readme.md', '.git', 'node_modules']
 
-const filterNameFunc = (d: string) => {
+const filterNameFunc = (options: AutomenuOptions) => (d: string) => {
   return (
     !filterNames.includes(d.toLowerCase()) &&
+    !options.excludeDirNames?.includes(d) &&
     !d.endsWith('.js') &&
     !d.endsWith('.html') &&
     !d.endsWith('.png') &&
@@ -33,35 +34,40 @@ const filterNameFunc = (d: string) => {
 // 生成顶部导航栏数据
 export const genTopMenu = (sourceDir: string, options: any): TopMenu[] => {
   const filenames = fs.readdirSync(sourceDir)
-  const topMenus = filenames.filter(filterNameFunc).map(filename => ({
+  const topMenus = filenames.filter(filterNameFunc(options)).map(filename => ({
     text: filename,
     link: padWithSlash(filename)
   }))
   return topMenus
 }
 
-const getSubMenus = (dirName: string, sourceDir: string): SideMenu[] => {
-  const filePath = path.join(sourceDir, dirName)
-  const fileNames = fs.readdirSync(filePath)
-  return fileNames.filter(filterNameFunc).map(filename => {
-    const tmpPath = path.resolve(sourceDir, dirName, filename)
-    if (isDir(tmpPath)) {
-      const obj: SideMenuData = Object.create(null)
-      obj.title = filename
-      obj.collapsable = true
-      //prettier-ignore
-      obj.children = getSubMenus(path.join(dirName, filename), sourceDir)
-      return obj
-    } else return `${padWithSlash(dirName)}${filename}`
-  })
-}
+const getSubMenus =
+  (options: AutomenuOptions) =>
+  (dirName: string, sourceDir: string): SideMenu[] => {
+    const filePath = path.join(sourceDir, dirName)
+    const fileNames = fs.readdirSync(filePath)
+    return fileNames.filter(filterNameFunc(options)).map(filename => {
+      const tmpPath = path.resolve(sourceDir, dirName, filename)
+      if (isDir(tmpPath)) {
+        const obj: SideMenuData = Object.create(null)
+        obj.title = filename
+        obj.collapsable = true
+        //prettier-ignore
+        obj.children = getSubMenus(options)(path.join(dirName, filename), sourceDir)
+        return obj
+      } else return `${padWithSlash(dirName)}${filename}`
+    })
+  }
 
 // 生成边栏目录数据
 export const genSideBar = (sourceDir: string, options: any): SideMenu[] => {
   const sideBarData = Object.create(null)
   const filenames = fs.readdirSync(sourceDir)
-  filenames.filter(filterNameFunc).forEach(filename => {
-    sideBarData[padWithSlash(filename)] = getSubMenus(filename, sourceDir)
+  filenames.filter(filterNameFunc(options)).forEach(filename => {
+    sideBarData[padWithSlash(filename)] = getSubMenus(options)(
+      filename,
+      sourceDir
+    )
   })
   return sideBarData
 }

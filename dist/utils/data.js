@@ -36,8 +36,10 @@ const isDir = (menuPath) => {
     return stat.isDirectory();
 };
 const filterNames = ['.vuepress', 'readme.md', '.git', 'node_modules'];
-const filterNameFunc = (d) => {
+const filterNameFunc = (options) => (d) => {
+    var _a;
     return (!filterNames.includes(d.toLowerCase()) &&
+        !((_a = options.excludeDirNames) === null || _a === void 0 ? void 0 : _a.includes(d)) &&
         !d.endsWith('.js') &&
         !d.endsWith('.html') &&
         !d.endsWith('.png') &&
@@ -46,24 +48,24 @@ const filterNameFunc = (d) => {
 // 生成顶部导航栏数据
 const genTopMenu = (sourceDir, options) => {
     const filenames = fs.readdirSync(sourceDir);
-    const topMenus = filenames.filter(filterNameFunc).map(filename => ({
+    const topMenus = filenames.filter(filterNameFunc(options)).map(filename => ({
         text: filename,
         link: (0, path_1.padWithSlash)(filename)
     }));
     return topMenus;
 };
 exports.genTopMenu = genTopMenu;
-const getSubMenus = (dirName, sourceDir) => {
+const getSubMenus = (options) => (dirName, sourceDir) => {
     const filePath = path.join(sourceDir, dirName);
     const fileNames = fs.readdirSync(filePath);
-    return fileNames.filter(filterNameFunc).map(filename => {
+    return fileNames.filter(filterNameFunc(options)).map(filename => {
         const tmpPath = path.resolve(sourceDir, dirName, filename);
         if (isDir(tmpPath)) {
             const obj = Object.create(null);
             obj.title = filename;
             obj.collapsable = true;
             //prettier-ignore
-            obj.children = getSubMenus(path.join(dirName, filename), sourceDir);
+            obj.children = getSubMenus(options)(path.join(dirName, filename), sourceDir);
             return obj;
         }
         else
@@ -74,8 +76,8 @@ const getSubMenus = (dirName, sourceDir) => {
 const genSideBar = (sourceDir, options) => {
     const sideBarData = Object.create(null);
     const filenames = fs.readdirSync(sourceDir);
-    filenames.filter(filterNameFunc).forEach(filename => {
-        sideBarData[(0, path_1.padWithSlash)(filename)] = getSubMenus(filename, sourceDir);
+    filenames.filter(filterNameFunc(options)).forEach(filename => {
+        sideBarData[(0, path_1.padWithSlash)(filename)] = getSubMenus(options)(filename, sourceDir);
     });
     return sideBarData;
 };

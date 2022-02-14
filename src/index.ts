@@ -1,15 +1,20 @@
 import { Context } from 'vuepress-types'
 import { red } from 'colors'
 import { existsSync, writeFileSync } from 'fs'
-import * as path from 'path'
 import { join } from 'path'
-import { AutoSidebarPluginOptions } from './types'
+import { AutomenuOptions } from './types'
 import { genTopMenu, genSideBar } from './utils/data'
 
 const MENU_FILE_NAME = 'topMenu'
 const SIDEBAR_FILE_NAME = 'sideBar'
+const defaultConfigOptions: AutomenuOptions = {
+  excludeDirNames: []
+}
 
-const AutoMenuPlugin = (options: AutoSidebarPluginOptions, ctx: Context) => {
+const AutoMenuPlugin = (
+  configOptions: AutomenuOptions = defaultConfigOptions,
+  ctx: Context
+) => {
   return {
     name: 'vuepress-plugin-auto-sidebar',
     // v1 生命周期
@@ -34,16 +39,15 @@ const AutoMenuPlugin = (options: AutoSidebarPluginOptions, ctx: Context) => {
           '-f, --force',
           `强制覆盖已存在的 ${MENU_FILE_NAME}.js 和 ${SIDEBAR_FILE_NAME}.js 文件（Forcibly overwrite the existing ${MENU_FILE_NAME}.js and ${SIDEBAR_FILE_NAME}.js file）`
         )
-        .action((dir: string, options: any) => {
-          options.topMenuLevels = options.topMenuLevels || 1
+        .action((dir: string, options: AutomenuOptions) => {
+          options = { ...configOptions, ...options }
           //prettier-ignore
           const sideBar = join(ctx.sourceDir, `.vuepress/${SIDEBAR_FILE_NAME}.js`)
           //prettier-ignore
           const menu = join(ctx.sourceDir, `.vuepress/${MENU_FILE_NAME}.js`)
-          const dataDir = path.resolve(ctx.sourceDir, dir)
           if (options.force || (!existsSync(sideBar) && !existsSync(menu))) {
-            const topMenuData = genTopMenu(dataDir, options)
-            const sideBarData = genSideBar(dataDir, options)
+            const topMenuData = genTopMenu(ctx.sourceDir, options)
+            const sideBarData = genSideBar(ctx.sourceDir, options)
             writeFileSync(
               sideBar,
               `module.exports = ${JSON.stringify(sideBarData, null, 2)};`
