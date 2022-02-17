@@ -40,7 +40,7 @@ const filterNames = [
     'readme.md',
     '.git',
     'node_modules',
-    '.DS_Store'
+    '.ds_store'
 ];
 const filterNameFunc = (options) => (d) => {
     var _a;
