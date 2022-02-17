@@ -35,11 +35,18 @@ const isDir = (menuPath) => {
     const stat = fs.statSync(menuPath);
     return stat.isDirectory();
 };
-const filterNames = ['.vuepress', 'readme.md', '.git', 'node_modules'];
+const filterNames = [
+    '.vuepress',
+    'readme.md',
+    '.git',
+    'node_modules',
+    '.DS_Store'
+];
 const filterNameFunc = (options) => (d) => {
     var _a;
     return (!filterNames.includes(d.toLowerCase()) &&
         !((_a = options.excludeDirNames) === null || _a === void 0 ? void 0 : _a.includes(d)) &&
+        !d.startsWith('#H_') &&
         !d.endsWith('.js') &&
         !d.endsWith('.html') &&
         !d.endsWith('.png') &&

@@ -18,12 +18,19 @@ const isDir = (menuPath: string): boolean => {
   return stat.isDirectory()
 }
 
-const filterNames = ['.vuepress', 'readme.md', '.git', 'node_modules']
+const filterNames = [
+  '.vuepress',
+  'readme.md',
+  '.git',
+  'node_modules',
+  '.DS_Store'
+]
 
 const filterNameFunc = (options: AutomenuOptions) => (d: string) => {
   return (
     !filterNames.includes(d.toLowerCase()) &&
     !options.excludeDirNames?.includes(d) &&
+    !d.startsWith('#H_') &&
     !d.endsWith('.js') &&
     !d.endsWith('.html') &&
     !d.endsWith('.png') &&
